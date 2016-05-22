@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>@@config_domain@@ mail server</title>
+<style>
+img {
+    width: 400px;
+}
+ol {
+    counter-reset: li;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -5px;
+}
+ol > li {
+    counter-increment: step;
+    position: relative;
+    margin: 0 5px;
+}
+ol > li::before {
+    content: counter(step);
+    position: absolute;
+    border-top-left-radius: 5px;
+    width: 30px;
+    height: 25px;
+    line-height: 25px;
+    font-size: 11px;
+    font-family: DejaVu Sans,Verdana,Geneva,sans-serif;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    background: rgba(60,117,177,0.9);
+}
+</style>
+</head>
+<body>
+<h1>Welcome to the @@config_domain@@ mail server!</h1>
+<p>
+    You can automatically configure your <a href="https://en.wikipedia.org/wiki/Email_client">mail client</a> to use this
+    mail server (we host a <a href=".well-known/autoconfig/mail/config-v1.1.xml">autoconfig file</a>).
+</p>
+<p>
+    We have <a href="examples">several examples</a> on how to programmatically use this mail server.
+</p>
+<h2>Thunderbird</h2>
+<p>
+    <a href="https://www.mozilla.org/en-US/thunderbird/">Thunderbird</a> can be
+    automatically configured by following these steps:
+</p>
+<ol>
+    <li><img src="thunderbird-setup-0.png"></li>
+    <li><img src="thunderbird-setup-1.png"></li>
+    <li><img src="thunderbird-setup-2.png"></li>
+    <li><img src="thunderbird-setup-3.png"></li>
+    <li><img src="thunderbird-setup-4.png"></li>
+    <li><img src="thunderbird-setup-5.png"></li>
+</ol>
+</body>
+</html>

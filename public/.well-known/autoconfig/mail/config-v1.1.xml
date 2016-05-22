@@ -1,0 +1,24 @@
+<clientConfig version="1.1">
+  <emailProvider id="@@config_domain@@">
+    <domain>@@config_domain@@</domain>
+    <displayName>@@config_domain@@ Mail</displayName>
+    <displayShortName>@@config_domain@@</displayShortName>
+    <incomingServer type="imap">
+      <hostname>mail.@@config_domain@@</hostname>
+      <port>993</port>
+      <socketType>SSL</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </incomingServer>
+    <outgoingServer type="smtp">
+      <hostname>mail.@@config_domain@@</hostname>
+      <port>25</port>
+      <socketType>STARTTLS</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </outgoingServer>
+    <documentation url="http://@@config_domain@@">
+      <descr lang="en">Settings Help</descr>
+    </documentation>
+  </emailProvider>
+</clientConfig>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>@@config_domain@@ mail server examples</title>
+<script src="codemirror.js"></script>
+<link rel="stylesheet" href="codemirror.css">
+<style>
+.CodeMirror {
+    height: auto;
+}
+.example > h1, .badges {
+    font-family: DejaVu Sans,Verdana,Geneva,sans-serif;
+}
+.example > h1 > a {
+    color: #000;
+    font-size: 17px;
+    text-transform: capitalize;
+}
+.example .badges {
+    font-weight: normal;
+    font-size: 13px;
+    padding: 5px;
+    color: #e4e4e4;
+}
+.example .badges > span {
+    background: #aaa;
+    padding: 3px 5px;
+    margin: 1px;
+}
+</style>
+</head>
+<body>
+<h1>@@config_domain@@ mail server programming examples</h1>
+<div id="examples"></div>
+<script>
+function example(name) {
+    var segments = name.split("/");
+    var language = segments[0];
+    var protocol = segments[1];
+    var title = segments[segments.length-2].replace(/-/g, " ");
+    var ext = name.split(".").pop();
+    var mode = ({
+        "py": "python",
+        "cs": "csharp"
+    })[ext] || ext;
+
+    var titleLanguageEl = document.createElement("span");
+    titleLanguageEl.className = "language";
+    titleLanguageEl.innerText = language;
+    var titleProtocolEl = document.createElement("span");
+    titleProtocolEl.className = "protocol";
+    titleProtocolEl.innerText = protocol;
+    var titleAnchorEl = document.createElement("a");
+    titleAnchorEl.href = name;
+    titleAnchorEl.innerText = title;
+    var titleBadgesEl = document.createElement("span");
+    titleBadgesEl.className = "badges";
+    titleBadgesEl.appendChild(titleLanguageEl);
+    titleBadgesEl.appendChild(titleProtocolEl);
+    var titleEl = document.createElement("h1");
+    titleEl.appendChild(titleAnchorEl);
+    titleEl.appendChild(titleBadgesEl);
+
+    var codeEl = document.createElement("code");
+
+    var containerEl = document.createElement("div");
+    containerEl.className = "example";
+    containerEl.appendChild(titleEl);
+    containerEl.appendChild(codeEl);
+    document.getElementById("examples").appendChild(containerEl);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", name, true);
+    xhr.onload = function() {
+        if (this.status == 200) {
+            var cm = CodeMirror(codeEl, {
+                value: this.responseText,
+                mode: mode,
+                readOnly: "nocursor",
+                lineWrapping: true,
+                viewportMargin: Infinity
+            });
+        }
+    };
+    xhr.send();
+}
+[
+    "python/smtp/send-mail/example.py",
+    "python/smtp/send-mail-with-authentication/example.py",
+    "python/imap/list-mail/example.py",
+    "netcat/imap/list-mail/example.txt"
+].forEach(example);
+</script>
+</body>
+</html>
