@@ -12,6 +12,8 @@ It uses the following software stack:
 
 # Usage
 
+Build and install the [Ubuntu Base Box](https://github.com/rgl/ubuntu-vagrant).
+
 Run `vagrant up` to configure the `mail.example.com` mail server environment.
 
 Configure your system `/etc/hosts` file with the `example.com` and `mail.example.com` domains:
