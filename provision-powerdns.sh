@@ -30,7 +30,8 @@ function pdns-set-config {
 }
 
 # recurse queries through the default vagrant environment DNS server.
-pdns-set-config recursor 10.0.2.2
+default_dns_resolver=$(awk '/nameserver /{print $2}' /etc/resolv.conf)
+pdns-set-config recursor $default_dns_resolver
 # increase the logging level.
 # you can see the logs with journalctl --follow -u pdns
 #pdns-set-config loglevel 10
