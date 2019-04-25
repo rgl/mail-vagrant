@@ -5,6 +5,7 @@ This lets you easily test your application code against a real sandboxed Mail Se
 It uses the following software stack:
 
 * [Postfix](http://www.postfix.org/) to the handle mail storage, reception, and transmission using the [Simple Mail Transfer Protocol (SMTP)](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol).
+  * Also show how to configure Postfix in Satellite mode (aka relay).
 * [Dovecot](http://www.dovecot.org/) to access the mail storage using the [Internet Message Access Protocol (IMAP)](https://en.wikipedia.org/wiki/Internet_Message_Access_Protocol).
 * Dovecot for providing User Authentication to Postfix ([SMTP AUTH](https://en.wikipedia.org/wiki/SMTP_Authentication)) through the [Simple Authentication and Security Layer (SASL)](https://en.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer).
 * [Dnsmasq](http://thekelleys.org.uk/dnsmasq/doc.html) to handle the internal [Domain Name System (DNS)](https://en.wikipedia.org/wiki/Domain_Name_System).
@@ -14,7 +15,9 @@ It uses the following software stack:
 
 Build and install the [Ubuntu Base Box](https://github.com/rgl/ubuntu-vagrant).
 
-Run `vagrant up` to configure the `mail.example.com` mail server environment.
+Run `vagrant up mail` to configure the `mail.example.com` mail server environment.
+
+Run `vagrant up satellite` to configure the `satellite.example.com` environment in Postfix Satellite mode that relays all mails to the mail server environment.
 
 Configure your system `/etc/hosts` file with the `example.com` and `mail.example.com` domains:
 
