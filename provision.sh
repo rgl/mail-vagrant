@@ -48,15 +48,16 @@ sleep 2; cat /var/vmail/$config_domain/alice/new/*.mail
 python3 /var/www/html/examples/python/imap/list-mail/example.py
 
 # print software versions.
-dpkg-query -f '${Package} ${Version}\n' -W pdns-server
+dpkg-query -f '${Package} ${Version}\n' -W dnsmasq
 dpkg-query -f '${Package} ${Version}\n' -W postfix
 dpkg-query -f '${Package} ${Version}\n' -W dovecot-imapd
 
-# list the DNS zone.
-pdnsutil list-all-zones
-pdnsutil check-zone $config_domain
-pdnsutil list-zone $config_domain
-
-# query for all records.
+# query records.
 dig any $config_domain
-dig any ruilopes.com
+dig mx $config_domain
+
+# IP lookup.
+dig -x $(hostname -I | awk '{print $2}')
+
+# query an external record.
+dig a ruilopes.com

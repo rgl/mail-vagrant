@@ -3,7 +3,7 @@ set -eux
 
 config_domain=$(hostname --domain)
 
-apt-get install -y --no-install-recommends dovecot-imapd dovecot-sqlite
+apt-get install -y --no-install-recommends dovecot-imapd dovecot-sqlite sqlite3
 
 # stop dovecot before we configure it.
 systemctl stop dovecot
