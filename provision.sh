@@ -34,10 +34,9 @@ echo Hello World | sendmail alice
 # dump the received email directly from the server store.
 sleep 2; cat /var/vmail/$config_domain/alice/new/*.mail
 
-# send a test email from alice to bob.
+# send a non-authenticated test email from alice to bob.
+# NB this should fail because the postfix server is requiring user authentication.
 python3 /var/www/html/examples/python/smtp/send-mail/example.py
-# dump the received email directly from the server store.
-sleep 2; cat /var/vmail/$config_domain/bob/new/*.mail
 
 # send an authenticated test email from bob to alice.
 python3 /var/www/html/examples/python/smtp/send-mail-with-authentication/example.py
