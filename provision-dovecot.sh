@@ -81,7 +81,25 @@ while read -r line; do
         values ('$email', '{PLAIN-MD5}5f4dcc3b5aa765d61d8327deb882cf99');" \
     | sqlite3 /etc/dovecot/users.sqlite
 done </etc/postfix/virtual_mailbox_maps
+
+# add all the relay users from the /etc/postfix/controlled_envelope_senders.cdb file as users.
+# NB this translates the cdb lines that have a key that starts with @ and then splits its value
+#    into individual envelope sender address. a cdb line is something like:
+#     +12,44:@example.com->satellite@example.com,nullmailer@example.com
+# NB all passwords are "password".
+for envelope_senders in `cdb -d /etc/postfix/controlled_envelope_senders.cdb | grep -E '^.+:@.+->' | sed -E 's,^.+->(.*),\1,g'`; do
+  for envelope_sender in `echo "$envelope_senders" | tr , ' '`; do
+    echo "insert or replace into users(email, password)
+          values ('$envelope_sender', '{PLAIN-MD5}5f4dcc3b5aa765d61d8327deb882cf99');" \
+      | sqlite3 /etc/dovecot/users.sqlite
+  done
+done
+
+# vaccum the users database.
 sqlite3 /etc/dovecot/users.sqlite vacuum
+
+# dump the users.
+sqlite3 /etc/dovecot/users.sqlite 'select email from users order by email'
 
 # all done. start dovecot.
 systemctl start dovecot

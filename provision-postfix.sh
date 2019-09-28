@@ -16,7 +16,7 @@ postfix postfix/main_mailer_type select Internet Site
 postfix postfix/mailname string $config_domain
 EOF
 
-apt-get install -y --no-install-recommends postfix-cdb
+apt-get install -y --no-install-recommends postfix-cdb tinycdb
 
 # stop postfix before we configure it.
 systemctl stop postfix
@@ -28,12 +28,23 @@ adduser --disabled-login --ingroup vmail --no-create-home --home /var/vmail --ge
 # NB Postfix will automatically create the needed directories/files/maildirs under /var/vmail.
 install -d -o vmail -g vmail -m 700 /var/vmail
 
+# let the relay users send email from any envelope sender.
+relay_users='
+relay-satellite
+'
+relay_users_array=()
+for relay_user in $relay_users; do
+relay_users_array+=("$relay_user@$config_domain")
+done
+echo "@$config_domain `(IFS=,; echo "${relay_users_array[*]}")`" >>/etc/postfix/controlled_envelope_senders
+
 # set virtual domains.
 cat >/etc/postfix/virtual_mailbox_domains <<EOF
 $config_domain                  20080428
 EOF
 
 # mailboxes.
+# NB all of these users have the same password "password" defined in provision-dovecot.sh.
 mailboxes='
 alice
 bob

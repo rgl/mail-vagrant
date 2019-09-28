@@ -2,7 +2,8 @@
 set -eux
 
 config_domain=$(hostname --domain)
-config_mail_ip_address=$1
+config_mail_server_fqdn="$1"; shift || true
+config_dns_server_ip_address="$1"; shift || true
 
 # update the package cache.
 apt-get update
@@ -22,7 +23,7 @@ EOF
 mkdir -p /etc/systemd/resolved.conf.d
 cat >/etc/systemd/resolved.conf.d/dns_servers.conf <<EOF
 [Resolve]
-DNS=$config_mail_ip_address
+DNS=$config_dns_server_ip_address
 EOF
 systemctl restart systemd-resolved
 
@@ -37,15 +38,31 @@ systemctl restart systemd-resolved
 #   # this way you can just see the values needed for debconf-set-selections:
 #   sudo debconf-get-selections | grep -E '^postfix\s+' | sort
 #
-# NB The form [destination] in relayhost turns off MX lookups.
+# NB addresses of the form [destination] are used to turn off MX lookups.
 debconf-set-selections <<EOF
 postfix postfix/main_mailer_type select Satellite system
 postfix postfix/mailname string $config_domain
-postfix postfix/relayhost string $config_domain
+postfix postfix/relayhost string [$config_mail_server_fqdn]
 EOF
 apt-get install -y --no-install-recommends postfix-cdb
+
+# tidy configuration.
 postconf -e 'mydestination = '
 postconf -e 'inet_protocols = ipv4'
+
+# configure relay credentials.
+# NB addresses of the form [destination] are used to turn off MX lookups.
+cat >/etc/postfix/sasl_passwd <<EOF
+[$config_mail_server_fqdn] relay-satellite@$config_domain:password
+EOF
+chmod 600 /etc/postfix/sasl_passwd
+postmap cdb:/etc/postfix/sasl_passwd # (re)creates /etc/postfix/sasl_passwd.cdb
+postconf -e 'smtp_sasl_password_maps = cdb:/etc/postfix/sasl_passwd'
+postconf -e 'smtp_sasl_auth_enable = yes'
+postconf -e 'smtp_sasl_security_options = noanonymous'
+postconf -e 'smtp_use_tls = yes'
+
+# reload configuration.
 systemctl reload postfix
 
 # send test email.
