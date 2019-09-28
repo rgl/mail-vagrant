@@ -31,6 +31,7 @@ install -d -o vmail -g vmail -m 700 /var/vmail
 # let the relay users send email from any envelope sender.
 relay_users='
 relay-satellite
+relay-nullmailer
 '
 relay_users_array=()
 for relay_user in $relay_users; do

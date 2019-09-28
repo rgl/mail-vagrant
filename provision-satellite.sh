@@ -65,7 +65,6 @@ postmap cdb:/etc/postfix/sasl_passwd # (re)creates /etc/postfix/sasl_passwd.cdb
 postconf -e 'smtp_sasl_password_maps = cdb:/etc/postfix/sasl_passwd'
 postconf -e 'smtp_sasl_auth_enable = yes'
 postconf -e 'smtp_sasl_security_options = noanonymous'
-postconf -e 'smtp_use_tls = yes'
 postconf -e 'smtp_tls_security_level = secure'
 postconf -e 'smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt'
 

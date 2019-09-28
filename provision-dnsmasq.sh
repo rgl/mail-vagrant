@@ -3,7 +3,8 @@ set -eux
 
 config_domain=$(hostname --domain)
 config_ip_address=$(hostname -I | awk '{print $2}')
-config_satellite_ip_address=$1
+config_satellite_ip_address="${1:-192.168.33.253}"; shift || true
+config_nullmailer_ip_address="${1:-192.168.33.252}"; shift || true
 
 # update the package cache.
 apt-get update
@@ -23,6 +24,7 @@ mx-host=$config_domain,mail.$config_domain
 host-record=$config_domain,$config_ip_address
 host-record=mail.$config_domain,$config_ip_address
 host-record=satellite.$config_domain,$config_satellite_ip_address
+host-record=nullmailer.$config_domain,$config_nullmailer_ip_address
 server=$default_dns_resolver
 EOF
 rm /etc/resolv.conf
