@@ -2,8 +2,8 @@
 set -eux
 
 config_domain=$(hostname --domain)
-config_mail_server_fqdn="$1"; shift || true
-config_dns_server_ip_address="$1"; shift || true
+config_mail_server_fqdn="${1:-mail.example.com}"; shift || true
+config_dns_server_ip_address="${1:-192.168.33.254}"; shift || true
 
 # update the package cache.
 apt-get update
@@ -26,6 +26,11 @@ cat >/etc/systemd/resolved.conf.d/dns_servers.conf <<EOF
 DNS=$config_dns_server_ip_address
 EOF
 systemctl restart systemd-resolved
+
+# import the mail server certificate.
+cp /vagrant/shared/$config_mail_server_fqdn-crt.pem /usr/local/share/ca-certificates/$config_mail_server_fqdn.crt
+openssl x509 -noout -text -in /usr/local/share/ca-certificates/$config_mail_server_fqdn.crt
+update-ca-certificates -v
 
 # install postfix in satellite mode.
 #
@@ -50,7 +55,7 @@ apt-get install -y --no-install-recommends postfix-cdb
 postconf -e 'mydestination = '
 postconf -e 'inet_protocols = ipv4'
 
-# configure relay credentials.
+# configure relay.
 # NB addresses of the form [destination] are used to turn off MX lookups.
 cat >/etc/postfix/sasl_passwd <<EOF
 [$config_mail_server_fqdn] relay-satellite@$config_domain:password
@@ -61,6 +66,8 @@ postconf -e 'smtp_sasl_password_maps = cdb:/etc/postfix/sasl_passwd'
 postconf -e 'smtp_sasl_auth_enable = yes'
 postconf -e 'smtp_sasl_security_options = noanonymous'
 postconf -e 'smtp_use_tls = yes'
+postconf -e 'smtp_tls_security_level = secure'
+postconf -e 'smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt'
 
 # reload configuration.
 systemctl reload postfix

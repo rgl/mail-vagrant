@@ -124,3 +124,8 @@ EOF
 
 # start postfix.
 systemctl start postfix
+
+# share data with the other hosts.
+mkdir -p /vagrant/shared
+openssl x509 -noout -text -in /etc/ssl/certs/ssl-cert-snakeoil.pem
+cp /etc/ssl/certs/ssl-cert-snakeoil.pem /vagrant/shared/$(hostname --fqdn)-crt.pem
