@@ -2,6 +2,7 @@
 set -eux
 
 config_domain=$(hostname --domain)
+config_fqdn=$(hostname --fqdn)
 
 apt-get install -y --no-install-recommends dovecot-imapd dovecot-sqlite sqlite3
 
@@ -12,8 +13,8 @@ cat >/etc/dovecot/dovecot.conf <<EOF
 listen = 0.0.0.0
 protocols = imap
 ssl = required
-ssl_cert = </etc/ssl/certs/ssl-cert-snakeoil.pem
-ssl_key = </etc/ssl/private/ssl-cert-snakeoil.key
+ssl_cert = </etc/ssl/certs/$config_fqdn-crt.pem
+ssl_key = </etc/ssl/private/$config_fqdn-key.pem
 auth_mechanisms = plain login
 disable_plaintext_auth = no
 first_valid_gid = 1000
@@ -45,7 +46,7 @@ service auth {
 }
 
 protocol lda {
-  postmaster_address = postmaster@example.com
+  postmaster_address = postmaster@$config_domain
 }
 EOF
 

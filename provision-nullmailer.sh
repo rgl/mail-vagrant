@@ -28,9 +28,9 @@ DNS=$config_dns_server_ip_address
 EOF
 systemctl restart systemd-resolved
 
-# import the mail server certificate.
-cp /vagrant/shared/$config_mail_server_fqdn-crt.pem /usr/local/share/ca-certificates/$config_mail_server_fqdn.crt
-openssl x509 -noout -text -in /usr/local/share/ca-certificates/$config_mail_server_fqdn.crt
+# trust the mail server CA.
+cp /vagrant/shared/tls/example-ca/example-ca-crt.pem /usr/local/share/ca-certificates/example-ca.crt
+openssl x509 -noout -text -in /usr/local/share/ca-certificates/example-ca.crt
 update-ca-certificates -v
 
 # install nullmailer

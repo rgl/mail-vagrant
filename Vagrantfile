@@ -27,6 +27,7 @@ Vagrant.configure(2) do |config|
   config.vm.define "mail" do |config|
     config.vm.hostname = config_mail_fqdn
     config.vm.network "private_network", ip: config_mail_ip_address
+    config.vm.provision "shell", path: "provision-certificate.sh", args: [config_mail_fqdn]
     config.vm.provision "shell", path: "provision-dnsmasq.sh", args: [config_satellite_ip_address, config_nullmailer_ip_address]
     config.vm.provision "shell", path: "provision-postfix.sh"
     config.vm.provision "shell", path: "provision-dovecot.sh"

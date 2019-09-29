@@ -2,6 +2,7 @@
 set -eux
 
 config_domain=$(hostname --domain)
+config_fqdn=$(hostname --fqdn)
 
 # these anwsers were obtained (after installing postfix-cdb) with:
 #
@@ -123,10 +124,13 @@ smtpd_helo_required = yes
 disable_vrfy_command = yes
 EOF
 
+# configure the TLS certificate.
+# see http://www.postfix.org/TLS_README.html
+install -m 440 -o root -g ssl-cert /vagrant/shared/tls/example-ca/$config_fqdn-key.pem /etc/ssl/private
+install -m 444 -o root -g root /vagrant/shared/tls/example-ca/$config_fqdn-crt.pem /etc/ssl/certs
+postconf -e "smtpd_tls_key_file = /etc/ssl/private/$config_fqdn-key.pem"
+postconf -e "smtpd_tls_cert_file = /etc/ssl/certs/$config_fqdn-crt.pem"
+openssl x509 -noout -text -in /etc/ssl/certs/$config_fqdn-crt.pem
+
 # start postfix.
 systemctl start postfix
-
-# share data with the other hosts.
-mkdir -p /vagrant/shared
-openssl x509 -noout -text -in /etc/ssl/certs/ssl-cert-snakeoil.pem
-cp /etc/ssl/certs/ssl-cert-snakeoil.pem /vagrant/shared/$(hostname --fqdn)-crt.pem
