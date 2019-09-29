@@ -2,6 +2,7 @@
 set -eux
 
 config_domain=$(hostname --domain)
+config_fqdn=$(hostname --fqdn)
 config_mail_server_fqdn="${1:-mail.example.com}"; shift || true
 config_dns_server_ip_address="${1:-192.168.33.254}"; shift || true
 
@@ -68,10 +69,10 @@ postconf -e 'smtp_sasl_security_options = noanonymous'
 postconf -e 'smtp_tls_security_level = secure'
 postconf -e 'smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt'
 
-# reload configuration.
-systemctl reload postfix
+# restart to reconfigure.
+systemctl restart postfix
 
-# send test email.
+# send test email to root and grace.
 sendmail root <<EOF
 Subject: Hello World from `hostname --fqdn` at `date --iso-8601=seconds`
 
@@ -81,4 +82,14 @@ echo '
 check the root email account at the mail server machine
 (inside /var/vmail/example.com/alice/new/) to see whether it
 received an email from this satellite machine
+'
+sendmail grace <<EOF
+Subject: Hello World from $config_fqdn at `date --iso-8601=seconds`
+
+Hello World!
+EOF
+echo '
+check the grace email account at the mail server machine
+(inside /var/vmail/example.com/grace/new/) to see whether it
+received an email from this nullmailer machine
 '
